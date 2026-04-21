@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Resep - Portofolio Guru Pastry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #FAF6F0; 
+            --bg-card: #FFFFFF;
+            --text-main: #4A3B32;
+            --text-light: #7A6C63;
+            --accent-color: #D4A373; 
+            --accent-light: #F4E4D4;
+            --border-color: #EADBC8;
+            --overlay-bg: rgba(74, 59, 50, 0.5); 
+        }
+
+        /* RESET & FULLSCREEN SETUP */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%; height: 100%; overflow: hidden; 
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        body { display: flex; flex-direction: column; }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+        /* --- NAVBAR --- */
+        nav {
+            height: 70px; background-color: var(--bg-card); padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex;
+            justify-content: space-between; align-items: center; flex-shrink: 0; 
+            z-index: 20; position: relative;
+        }
+
+        .back-btn { text-decoration: none; color: var(--accent-color); font-weight: 500; transition: color 0.3s; font-size: 0.95rem; }
+        .back-btn:hover { color: var(--text-main); }
+        .nav-title { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; color: var(--accent-color); cursor: pointer; }
+
+        /* --- APP CONTAINER --- */
+        .app-container { display: flex; flex: 1; overflow: hidden; width: 100%; position: relative; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 320px; background-color: var(--bg-card); border-right: 1px solid var(--border-color);
+            height: 100%; overflow-y: auto; padding: 30px 20px; flex-shrink: 0;
+            transition: transform 0.3s ease; z-index: 100;
+        }
+
+        .sidebar-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--accent-light);
+        }
+
+        .close-sidebar-btn { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-light); cursor: pointer; }
+
+        .recipe-list { list-style: none; }
+        .recipe-list li { margin-bottom: 8px; }
+        .recipe-list a {
+            display: block; text-decoration: none; color: var(--text-light);
+            padding: 12px 15px; border-radius: 10px; transition: all 0.3s ease; font-size: 0.95rem; cursor: pointer;
+        }
+        .recipe-list a:hover, .recipe-list a.active {
+            background-color: var(--accent-light); color: var(--text-main); font-weight: 500; transform: translateX(5px);
+        }
+
+        .sidebar-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--overlay-bg); z-index: 90; opacity: 0; transition: opacity 0.3s ease;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .content { flex: 1; height: 100%; overflow-y: auto; padding: 40px 6vw; background-color: var(--bg-color); scroll-behavior: smooth; }
+
+        /* Sembunyikan resep secara default */
+        .content-inner { display: none; }
+        
+        /* Tampilkan hanya resep yang aktif dengan animasi */
+        .content-inner.active {
+            display: block;
+            max-width: 100%; margin: 0 auto 30px auto; background-color: var(--bg-card);
+            padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .recipe-hero-img { width: 50%; height: 350px; object-fit: cover; border-radius: 15px; margin-bottom: 20px; text-align: center; }
+        .recipe-title { font-size: 2.8rem; color: var(--accent-color); margin-bottom: 40px; text-align: center; }
+
+        .recipe-details { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; }
+        .section-title { font-size: 1.5rem; margin-bottom: 20px; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+
+        .ingredients-list { list-style: none; }
+        .ingredients-list li { padding: 10px 0; border-bottom: 1px dashed var(--border-color); font-size: 0.95rem; }
+        .ingredients-list li::before { content: '✿'; color: var(--accent-color); margin-right: 10px; }
+
+        .steps-list { list-style: none; counter-reset: step-counter; }
+        .steps-list li { margin-bottom: 20px; position: relative; padding-left: 45px; font-size: 0.95rem; }
+        .steps-list li::before {
+            counter-increment: step-counter; content: counter(step-counter);
+            position: absolute; left: 0; top: 0; width: 30px; height: 30px;
+            background-color: var(--accent-light); color: var(--text-main);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-weight: 600; font-family: 'Playfair Display', serif;
+        }
+
+        /* --- TOMBOL NAVIGASI NEXT & PREV --- */
+        .nav-buttons {
+            display: flex; justify-content: space-between; max-width: 900px; margin: 0 auto 50px auto;
+        }
+
+        .nav-btn {
+            background-color: var(--accent-color); color: var(--bg-card); border: none;
+            padding: 12px 25px; border-radius: 30px; font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .nav-btn:hover:not(:disabled) { background-color: var(--text-main); transform: translateY(-2px); }
+        .nav-btn:disabled { background-color: var(--border-color); color: var(--text-light); cursor: not-allowed; opacity: 0.7; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            nav { padding: 0 20px; }
+            .nav-title { font-size: 1.2rem; }
+            .mobile-menu-btn { display: block; }
+            .back-btn { display: none; }
+            .sidebar { position: absolute; top: 0; left: 0; width: 280px; transform: translateX(-100%); box-shadow: 5px 0 15px rgba(0,0,0,0.1); }
+            .sidebar.active { transform: translateX(0); }
+            .close-sidebar-btn { display: block; }
+            .sidebar-overlay.active { display: block; opacity: 1; }
+            .content { padding: 20px; }
+            .content-inner.active { padding: 25px; }
+            .recipe-details { grid-template-columns: 1fr; gap: 30px; }
+            .recipe-hero-img { height: 200px; }
+            .recipe-title { font-size: 2rem; }
+            .recipe-list a:hover, .recipe-list a.active { transform: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="back-btn">← Beranda</a>
+        <button class="mobile-menu-btn" id="openMenuBtn">☰</button>
+        <div class="nav-title">Koleksi Resep Edukasi</div>
+        <div style="width: 24px;"></div> 
+    </nav>
+
+    <div class="app-container">
+        <div class="sidebar-overlay" id="overlay"></div>
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>Daftar Resep</h3>
+                <button class="close-sidebar-btn" id="closeMenuBtn">✕</button>
+            </div>
+            <ul class="recipe-list">
+                <li style="margin-bottom: 20px;">
+                    <a href="index.html" style="background: var(--bg-color); border: 1px solid var(--border-color); text-align: center;">← Kembali ke Beranda</a>
+                </li>
+                <li><a class="recipe-link active">1. Roti Boy</a></li>
+                <li><a class="recipe-link">2. Bolu Pandan Panggang</a></li>
+                <li><a class="recipe-link">3. Kue Kering Nastar</a></li>
+                <li><a class="recipe-link">4. Donat Ubi Kuning</a></li>
+                <li><a class="recipe-link">5. Roti Pisang</a></li>
+                <li><a class="recipe-link">6. Risol Mayo</a></li>
+                <li><a class="recipe-link">7. Cake Tape</a></li>
+                <li><a class="recipe-link">8. Bolu Pisang</a></li>
+                <li><a class="recipe-link">9. Martabak Mini</a></li>
+                <li><a class="recipe-link">10. Rainbow Cake</a></li>
+            </ul>
+        </aside>
+
+        <main class="content" id="main-content">
+
+            <div class="content-inner active">
+                <div style="display: flex; justify-content: center;"> 
+                    <img src="Rotiboy.jpg.jpeg" alt="Roti Boy" class="recipe-hero-img">
+                </div>
+                <h1 class="recipe-title">Roti Boy</h1>
+                <div class="recipe-details">
+                    <div>
+                        <h2 class="section-title">Bahan-bahan</h2>
+                        <ul class="ingredients-list">
+                            <li><strong>Bahan Roti:</strong> 250 gr tepung terigu protein tinggi, 65 gr gula pasir, 20 gr susu bubuk, 5 gr ragi instan, 1 butir telur, 100 ml air dingin, 45 gr margarin, 4 gr garam.</li>
+                            <li><strong>Bahan Topping:</strong> 4 gr kopi instan (Nescafe), 1 sdm air panas, 60 gr butter, 50 gr gula halus, 1 butir telur, 70 gr tepung terigu protein rendah.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Langkah Pembuatan</h2>
+                        <ol class="steps-list">
+                            <li><strong>Adonan Roti:</strong> Masukkan gula, tepung, susu bubuk dan ragi, aduk rata. Masukkan telur, mixer kecepatan rendah. Tambahkan air sedikit demi sedikit.</li>
+                            <li>Jika sudah menggumpal, masukkan margarin dan garam. Mixer kembali sampai kalis elastis. Bulatkan adonan, tutup dengan kain/plastik dan diamkan ±15 menit.</li>
+                            <li><strong>Membuat Topping:</strong> Seduh kopi dengan air panas. Di mangkok lain, mixer butter sebentar, tambahkan gula halus, telur, dan pasta kopi. Masukkan tepung terigu, aduk rata. Masukkan ke plastik segitiga.</li>
+                            <li><strong>Perakitan:</strong> Kempeskan adonan roti, potong-potong 45 gr dan rounding (bulatkan). Pipihkan, isi dengan margarin beku, bulatkan kembali dan taruh di loyang. Diamkan 35-40 menit.</li>
+                            <li>Setelah 40 menit, beri topping melingkar di atas roti. Panggang di oven bersuhu 180°C (api atas bawah) selama 15-18 menit. Siap dihidangkan.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-inner">
+                <div style="display: flex; justify-content: center;"> 
+                    <img src="bolu pandan panggang.png" alt="Bolu Pandan" class="recipe-hero-img">
+                </div>  
+                <h1 class="recipe-title">Bolu Pandan Panggang</h1>
+                <div class="recipe-details">
+                    <div>
+                        <h2 class="section-title">Bahan-bahan</h2>
+                        <ul class="ingredients-list">
+                            <li>4 butir telur</li>
+                            <li>130 gr susu bubuk (atau gula pasir sesuai selera)</li>
+                            <li>6 gr SP</li>
+                            <li>10 gr tepung maizena</li>
+                            <li>140 gr tepung terigu pro sedang</li>
+                            <li>80 gr santan instan</li>
+                            <li>40 gr minyak goreng</li>
+                            <li>80 gr margarin (lelehkan)</li>
+                            <li>2 sdt pasta pandan</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Langkah Pembuatan</h2>
+                        <ol class="steps-list">
+                            <li>Masukkan telur, gula (susu bubuk), dan SP ke mangkok. Mixer dengan kecepatan tinggi ±5 menit hingga putih berjejak/pucat.</li>
+                            <li>Masukkan santan dan pasta pandan, mixer kecepatan rendah ±1 menit. Tambahkan maizena dan mixer kembali ±½ menit.</li>
+                            <li>Masukkan tepung terigu perlahan (mixer 1-2 menit), lalu masukkan minyak goreng hingga rata. Terakhir, masukkan margarin leleh.</li>
+                            <li>Tuang adonan ke dalam loyang yang sudah diolesi.</li>
+                            <li>Panggang dalam oven (suhu 170°C, api atas bawah) selama 50 menit. Jika pakai oven tangkring, 60 menit api sedang. Angkat dan potong.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-inner">
+                <div style="display: flex; justify-content: center;"> 
+                    <img src="nastar.jpg.jpeg" alt="Nastar" class="recipe-hero-img">
+                </div>
+                <h1 class="recipe-title">Kue Kering Nastar</h1>
+                <div class="recipe-details">
+                    <div>
+                        <h2 class="section-title">Bahan-bahan</h2>
+                        <ul class="ingredients-list">
+                            <li>125 gr margarin & 125 gr butter</li>
+                            <li>80 gr gula halus</li>
+                            <li>350 gr tepung terigu pro rendah</li>
+                            <li>10 gr susu bubuk & 150 gr tepung maizena</li>
+                            <li>2 kuning telur</li>
+                            <li>1 ½ sdt garam & Selai nanas (isian)</li>
+                            <li><strong>Bahan Olesan:</strong> 2 kuning telur, 1 sdt minyak sayur</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Langkah Pembuatan</h2>
+                        <ol class="steps-list">
+                            <li>Mixer butter, margarin, dan gula halus selama 1 menit. Tambahkan kuning telur, mixer ½ menit. Masukkan susu bubuk, aduk dengan spatula.</li>
+                            <li>Masukkan tepung terigu dan maizena perlahan sambil diayak. Uleni sampai kalis.</li>
+                            <li>Timbang adonan 7-8 gr, pipihkan dan isi selai nanas (3-4 gr). Bulatkan dan tata di loyang berlapis kertas roti.</li>
+                            <li>Panggang oven (api bawah, 150°C) selama 35-40 menit. Putar loyang di menit ke-20.</li>
+                            <li>Keluarkan, dinginkan sebentar, olesi permukaan dengan bahan olesan. Panggang lagi 7-10 menit (api atas).</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-inner">
+                <div style="display: flex; justify-content: center;"> 
+                <img src="donat ubi kuning.jpg.jpeg" alt="Donat Ubi" class="recipe-hero-img">
+                </div>
+                <h1 class="recipe-title">Donat Ubi Kuning</h1>
+                <div class="recipe-details">
+                    <div>
+                        <h2 class="section-title">Bahan-bahan</h2>
+                        <ul class="ingredients-list">
+                            <li>250 gr tepung terigu pro tinggi (Cakra)</li>
+                            <li>100 gr ubi jalar (kukus & haluskan)</li>
+                            <li>2 kuning telur</li>
+                            <li>40 gr gula pasir & 30 gr margarin</li>
+                            <li>90 ml susu cair dingin (Ultra)</li>
+                            <li>1½ sdt ragi (Fermipan) & ¼ sdt garam</li>
+                            <li><strong>Topping:</strong> Gula halus, meses, cokelat batang</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Langkah Pembuatan</h2>
+                        <ol class="steps-list">
+                            <li>Aduk rata tepung terigu, gula pasir, dan ragi. Masukkan kuning telur dan ubi halus.</li>
+                            <li>Tuang susu cair sedikit demi sedikit. Mixer hingga setengah kalis, lalu masukkan margarin dan garam. Mixer hingga kalis elastis.</li>
+                            <li>Bagi adonan masing-masing 35 gr, bulatkan (rounding). Diamkan di loyang bertabur tepung selama 30 menit.</li>
+                            <li>Tekan perlahan hingga pipih, lubangi tengahnya dengan spuit. Proofing (tutup kain) selama 25 menit.</li>
+                            <li>Goreng dengan api kecil hingga keemasan. Dinginkan dan hias dengan topping.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-inner">
+                <div style="display: flex; justify-content: center;"> 
+                    <img src="Roti pisang.jpg.jpeg" alt="Roti Pisang" class="recipe-hero-img">
+                </div>
+                <h1 class="recipe-title">Roti Pisang</h1>
+                <div class="recipe-details">
+                    <div>
+                        <h2 class="section-title">Bahan-bahan</h2>
+                        <ul class="ingredients-list">
+                            <li>175 gr tepung Cakra & 75 gr Segitiga Biru</li>
+                            <li>65 gr gula pasir & 10 gr susu bubuk</li>
+                            <li>5 gr ragi instan & 1 gr Bakerine Plus</li>
+                            <li>2 butir kuning telur & 110 ml susu cair dingin</li>
+                            <li>40 gr margarin & sejumput garam</li>
+                            <li>Pisang, cokelat, dan keju (untuk isian)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Langkah Pembuatan</h2>
+                        <ol class="steps-list">
+                            <li>Campur tepung, gula, susu bubuk, dan ragi. Tambahkan susu cair dan kuning telur, mixer kecepatan sedang (3-5 menit) hingga setengah kalis.</li>
+                            <li>Masukkan margarin dan garam. Mixer cepat (7-8 menit) hingga kalis elastis.</li>
+                            <li>Potong adonan seberat 50 gr, bulatkan. Proofing dengan tutup kain selama 20 menit.</li>
+                            <li>Gilas adonan bentuk oval, isi dengan pisang, cokelat, dan keju. Bentuk sesuai selera dan letakkan di atas baking paper.</li>
+                            <li>Proofing 1 jam. Olesi dengan susu cair, panggang di oven 180°C selama 17 menit. Selagi panas olesi margarin.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-inner">
+                <div style="display: flex; justify-content: center;"> 
+                    <img src="risol mayo.jpg.jpeg" alt="Risol Mayo" class="recipe-hero-img">
+                </div>
+                <h1 class="recipe-title">Risol Mayo</h1>
+                <div class="recipe-details">
+                    <div>
+                        <h2 class="section-title">Bahan-bahan</h2>
+                        <ul class="ingredients-list">
+                            <li><strong>Bahan Kulit:</strong> 300 gr tepung terigu, ½ sdt garam, 2 butir telur, 600 ml air.</li>
+                            <li><strong>Bahan Isian:</strong> 3 butir telur (rebus), sosis, 300 gr mayones, 40 gr susu kental manis.</li>
+                            <li><strong>Bahan Pelapis:</strong> Tepung panir, campuran tepung + air.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Langkah Pembuatan</h2>
+                        <ol class="steps-list">
+                            <li><strong>Membuat Kulit:</strong> Campur terigu dan garam. Masukkan telur kocok, tambahkan air bertahap. Saring adonan. Dadar tipis di teflon panas hingga adonan habis.</li>
+                            <li><strong>Menyiapkan Isian:</strong> Campurkan mayones dengan susu kental manis hingga rata.</li>
+                            <li><strong>Perakitan:</strong> Ambil 1 lembar kulit, letakkan irisan sosis, telur rebus, dan saus mayo. Gulung rapat.</li>
+                            <li>Celupkan risol ke campuran tepung+air, gulingkan di tepung panir hingga rata.</li>
+                            <li>Goreng dalam minyak panas hingga kuning keemasan. Siap disajikan.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-inner">
+                <div style="display: flex; justify-content: center;"> 
+                <img src="cake tape.jpg.jpeg" alt="Cake Tape" class="recipe-hero-img">
+                </div>
+                <h1 class="recipe-title">Cake Tape Singkong</h1>
+                <div class="recipe-details">
+                    <div>
+                        <h2 class="section-title">Bahan-bahan</h2>
+                        <ul class="ingredients-list">
+                            <li>100 gr tepung terigu pro rendah & 10 gr maizena</li>
+                            <li>120 gr gula pasir & 20 gr susu bubuk</li>
+                            <li>3 kuning telur & 3 telur utuh</li>
+                            <li>9 gr SP & 120 gr butter</li>
+                            <li>150 gr tape singkong (lumatkan)</li>
+                            <li>80 gr keju parut</li>
+                            <li>Susu kental manis secukupnya</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Langkah Pembuatan</h2>
+                        <ol class="steps-list">
+                            <li>Mixer terigu, gula, susu bubuk, maizena, SP, dan semua telur dengan kecepatan tinggi (7-8 menit) hingga mengembang kental berjejak.</li>
+                            <li>Masukkan tape lumat dan susu kental manis, mixer kecepatan rendah 30 detik.</li>
+                            <li>Tambahkan keju parut dan butter cair bertahap, aduk perlahan dengan spatula hingga rata.</li>
+                            <li>Tuang ke loyang (20x20x4 cm) beralas baking paper. Hentakkan agar udara keluar dan taburi topping sesuai selera.</li>
+                            <li>Panggang suhu 160°C selama 40-50 menit hingga kecokelatan. Potong saat sudah dingin.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-inner">
+                <div style="display: flex; justify-content: center;"> 
+                    <img src="bolu pisang.jpg.jpeg" alt="Bolu Pisang" class="recipe-hero-img">
+                </div>
+                <h1 class="recipe-title">Bolu Pisang</h1>
+                <div class="recipe-details">
+                    <div>
+                        <h2 class="section-title">Bahan-bahan</h2>
+                        <ul class="ingredients-list">
+                            <li>250 gr pisang ambon matang (haluskan)</li>
+                            <li>5 butir telur</li>
+                            <li>100 gr gula pasir & 70 gr gula palem</li>
+                            <li>200 gr tepung terigu</li>
+                            <li>½ sdt baking powder & ½ sdt soda kue</li>
+                            <li>200 gr margarin (cairkan)</li>
+                            <li>1 sdt SP & ½ sdt vanili cair</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Langkah Pembuatan</h2>
+                        <ol class="steps-list">
+                            <li>Ayak tepung terigu, baking powder, dan soda kue agar halus. Sisihkan.</li>
+                            <li>Mixer telur, gula pasir, gula palem, SP, dan vanili dengan kecepatan tinggi selama 10 menit hingga mengembang.</li>
+                            <li>Masukkan pisang halus, mixer sebentar dengan kecepatan rendah.</li>
+                            <li>Masukkan campuran tepung kering perlahan. Matikan mixer.</li>
+                            <li>Tuang margarin cair dan aduk balik pakai spatula. Tuang ke loyang beroles margarin dan hentakkan. Panggang di oven 180°C selama 45 menit.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-inner">
+                <div style="display: flex; justify-content: center;"> 
+                    <img src="martabak mini.jpg.jpeg" alt="Martabak Mini" class="recipe-hero-img">
+                </div>
+                <h1 class="recipe-title">Martabak Mini</h1>
+                <div class="recipe-details">
+                    <div>
+                        <h2 class="section-title">Bahan-bahan</h2>
+                        <ul class="ingredients-list">
+                            <li>250 gr terigu sedang (Segitiga Biru)</li>
+                            <li>40 gr gula pasir & sejumput garam</li>
+                            <li>3 sdm margarin cair</li>
+                            <li>300 ml air putih / susu UHT</li>
+                            <li>2 butir telur (kocok lepas)</li>
+                            <li>½ sdt ragi instan & ½ sdt baking soda</li>
+                            <li><strong>Topping:</strong> Keju, meses, susu kental manis</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Langkah Pembuatan</h2>
+                        <ol class="steps-list">
+                            <li>Aduk rata terigu, gula, garam, dan air/susu dengan whisker. Masukkan ragi instan, aduk kembali. Diamkan adonan selama 40 menit.</li>
+                            <li>Buka tutup adonan, masukkan kocokan telur, margarin cair, dan soda kue. Aduk perlahan hingga menyatu.</li>
+                            <li>Panaskan cetakan teflon (api kecil). Tuang 1 sendok sayur adonan, tekan sedikit agar membentuk pinggiran.</li>
+                            <li>Jika mulai bergelembung bersarang, taburi gula pasir sedikit dan tutup teflon.</li>
+                            <li>Angkat saat permukaan matang. Olesi margarin panas-panas, beri topping meses/keju dan susu.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-inner">
+                <div style="display: flex; justify-content: center;"> 
+                    <img src="rainbow cake.jpg.jpeg" alt="Rainbow Cake" class="recipe-hero-img">
+                </div>
+                <h1 class="recipe-title">Rainbow Cake</h1>
+                <div class="recipe-details">
+                    <div>
+                        <h2 class="section-title">Bahan-bahan</h2>
+                        <ul class="ingredients-list">
+                            <li>250 gr tepung terigu pro sedang</li>
+                            <li>200 gr gula pasir & 6 butir telur</li>
+                            <li>200 ml minyak sayur & 200 ml susu cair</li>
+                            <li>1 sdm SP & 1 sdt baking powder</li>
+                            <li>1 sdt vanili bubuk & pewarna makanan</li>
+                            <li><strong>Bahan Krim:</strong> 250 gr whipped cream bubuk, 400 ml air dingin, 1 sdt vanili.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Langkah Pembuatan</h2>
+                        <ol class="steps-list">
+                            <li>Mixer telur, gula, dan SP kecepatan tinggi hingga putih pucat. Masukkan terigu, baking powder, dan vanili ayak, aduk rata.</li>
+                            <li>Tuang minyak dan susu perlahan, aduk perlahan. Bagi adonan jadi 6 dan beri pewarna pelangi (merah, jingga, kuning, hijau, biru, ungu).</li>
+                            <li>Panggang terpisah tiap warna dalam oven suhu 180°C selama 15-20 menit di loyang tipis. Angkat dan dinginkan.</li>
+                            <li><strong>Krim (Frosting):</strong> Mixer whipped cream bubuk dengan air dingin dan vanili hingga mengental kaku.</li>
+                            <li>Oleskan krim di antara susunan lapis kue. Hias bagian luarnya. Rainbow Cake siap dipotong!</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prevBtn" disabled>← Sebelumnya</button>
+                <button class="nav-btn" id="nextBtn">Selanjutnya →</button>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const openMenuBtn = document.getElementById('openMenuBtn');
+        const closeMenuBtn = document.getElementById('closeMenuBtn');
+        
+        // Element List Resep dan Tombol
+        const recipeLinks = document.querySelectorAll('.recipe-link');
+        const recipeContents = document.querySelectorAll('.content-inner');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const mainContent = document.getElementById('main-content');
+
+        let currentIndex = 0;
+
+        // Fungsi untuk mengontrol UI Mobile Menu
+        openMenuBtn.addEventListener('click', () => { sidebar.classList.add('active'); overlay.classList.add('active'); });
+        closeMenuBtn.addEventListener('click', closeSidebarOnMobile);
+        overlay.addEventListener('click', closeSidebarOnMobile);
+
+        function closeSidebarOnMobile() {
+            sidebar.classList.remove('active'); overlay.classList.remove('active');
+        }
+
+        // Fungsi untuk menampilkan Resep berdasarkan Index
+        function showRecipe(index) {
+            // Hapus class active dari semua konten dan link sidebar
+            recipeContents.forEach(content => content.classList.remove('active'));
+            recipeLinks.forEach(link => link.classList.remove('active'));
+
+            // Tambahkan class active pada index yang dipilih
+            recipeContents[index].classList.add('active');
+            recipeLinks[index].classList.add('active');
+
+            // Atur status disabled pada tombol navigasi
+            prevBtn.disabled = (index === 0);
+            nextBtn.disabled = (index === recipeContents.length - 1);
+
+            // Scroll otomatis ke atas konten saat berganti resep
+            mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Event Listener untuk klik pada sidebar
+        recipeLinks.forEach((link, idx) => {
+            link.addEventListener('click', () => {
+                currentIndex = idx;
+                showRecipe(currentIndex);
+                if (window.innerWidth <= 900) closeSidebarOnMobile();
+            });
+        });
+
+        // Event Listener untuk Tombol Prev
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                showRecipe(currentIndex);
+            }
+        });
+
+        // Event Listener untuk Tombol Next
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < recipeContents.length - 1) {
+                currentIndex++;
+                showRecipe(currentIndex);
+            }
+        });
+    </script>
+</body>
+</html>

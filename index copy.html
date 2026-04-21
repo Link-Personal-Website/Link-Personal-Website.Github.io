@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portofolio Guru Pastry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLE & RESET --- */
+        :root {
+            --bg-color: #FAF6F0; /* Krem pastel */
+            --text-main: #4A3B32; /* Cokelat gelap */
+            --text-light: #7A6C63;
+            --accent-color: #D4A373; /* Karamel */
+            --accent-hover: #B58453;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth; /* Efek scroll halus */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 80px 20px;
+        }
+
+        /* --- PROFIL (HERO SECTION) --- */
+        #profil {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(250, 246, 240, 0.8), rgba(250, 246, 240, 1)), 
+                        url('bg-hero.jpeg') center/cover;
+        }
+
+        .profile-img {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--white);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        #profil h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        #profil p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        .scroll-indicator {
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            text-decoration: none;
+            letter-spacing: 2px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* --- DESKRIPSI --- */
+        #deskripsi {
+            text-align: center;
+            background-color: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            margin-top: -50px;
+            position: relative;
+            z-index: 10;
+            padding: 60px 40px;
+        }
+
+        #deskripsi h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        /* --- RESEP (ZIG-ZAG LAYOUT) --- */
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 50px;
+        }
+
+        .recipe-card {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        /* Selang-seling rata kanan kiri */
+        .recipe-card:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .recipe-img {
+            flex: 1;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+        .recipe-img img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s;
+        }
+
+        .recipe-img img:hover {
+            transform: scale(1.05);
+        }
+
+        .recipe-info {
+            flex: 1;
+        }
+
+        .recipe-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        /* --- VIDEO & KELAS --- */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* Ratio 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--white);
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        /* --- RESPONSIVE (MOBILE) --- */
+        @media (max-width: 768px) {
+            .recipe-card, .recipe-card:nth-child(even) {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            .recipe-img img {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <section id="profil">
+        <img src="https://images.unsplash.com/photo-1583338917451-face2751d8d5?q=80&w=1500&auto=format&fit=crop" alt="Foto Profil Guru" class="profile-img">
+        <h1>Nama Guru</h1>
+        <p>Instruktur Tataboga & Pastry Spesialis</p>
+        <a href="#deskripsi" class="scroll-indicator">SCROLL KE BAWAH ↓</a>
+    </section>
+
+    <div class="container">
+        <section id="deskripsi">
+            <h2>Tentang Saya</h2>
+            <p>Trainer Boga (Pastry & Bakery) dengan pengalaman sejak tahun 2021 hingga 2026 dalam melatih siswa SMA Double Track. Berkompeten dalam memberikan pelatihan teori dan praktik pembuatan pastry dan bakery, mulai dari teknik dasar hingga produksi produk siap jual. Berpengalaman membimbing siswa dalam pengembangan keterampilan, kreativitas, serta kewirausahaan melalui konsep pembelajaran 3P hingga 5P (Pelatihan, Praktik, Pengalaman, Produk, dan Pemasaran). <br> <br>Sejak tahun 2021 hingga 2026, saya berperan sebagai trainer boga pastry & bakery yang berfokus pada pengembangan keterampilan siswa. Saya membimbing siswa dari tahap dasar hingga mampu menghasilkan produk yang berkualitas dan bernilai jual. Melalui pendekatan 3P yang berkembang menjadi 5P, saya tidak hanya mengajarkan cara membuat, tetapi juga menanamkan jiwa wirausaha agar siswa siap mandiri dan bersaing di dunia kerja.</p>
+        </section>
+    </div>
+
+    <section id="resep" class="container">
+        <h2 class="section-title">Karya & Resep Pilihan</h2>
+        
+        <div class="recipe-card">
+            <div class="recipe-img">
+                <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=1000&auto=format&fit=crop" alt="Kue Cokelat">
+            </div>
+            <div class="recipe-info">
+                <h3>Classic Chocolate Entremet</h3>
+                <p>Kue cokelat berlapis dengan tekstur yang kaya: *sponge cake* yang lembut, lapisan *crunchy praline*, dan *chocolate mousse* yang meleleh di mulut. Cocok untuk hidangan penutup acara formal.</p>
+            </div>
+        </div>
+
+        <div class="recipe-card">
+            <div class="recipe-img">
+                <img src="https://images.unsplash.com/photo-1550617931-e17a7b70dce2?q=80&w=1000&auto=format&fit=crop" alt="Macaron">
+            </div>
+            <div class="recipe-info">
+                <h3>French Macarons</h3>
+                <p>Kue mungil khas Prancis dengan *shell* yang renyah di luar namun *chewy* di dalam, diisi dengan *ganache* raspberry yang memberikan sentuhan rasa manis dan asam yang seimbang.</p>
+            </div>
+        </div>
+
+        <div class="recipe-card">
+            <div class="recipe-img">
+                <img src="https://images.unsplash.com/photo-1608198093002-ad4e005484ec?q=80&w=1000&auto=format&fit=crop" alt="Croissant">
+            </div>
+            <div class="recipe-info">
+                <h3>Artisan Butter Croissant</h3>
+                <p>Teknik laminasi adonan tingkat lanjut untuk menciptakan *croissant* dengan rongga (honeycomb) yang sempurna, aroma mentega yang kuat, dan lapisan luar yang sangat renyah.</p>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <a href="recipe.html" class="btn">Lihat Resep Lainnya</a>
+        </div>
+    </section>
+
+    <section id="video" class="container">
+        <h2 class="section-title">Tutorial & Kelas Mengajar</h2>
+        
+        <div class="video-grid">
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/nBWhH1l3i7I" title="Tutorial Pastry 1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/S2O2hZ5I11M" title="Tutorial Pastry 2" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/7V-w00_P-J8" title="Tutorial Pastry 3" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <a href="https://youtube.com" target="_blank" class="btn">Lihat Video Lainnya</a>
+        </div>
+    </section>
+
+    <footer style="text-align: center; padding: 40px; color: var(--text-light); font-size: 0.9rem;">
+        <p>&copy; 2026 Portofolio Guru Tataboga. Dibuat dengan estetik.</p>
+    </footer>
+
+</body>
+</html>

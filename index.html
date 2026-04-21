@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portofolio Guru Pastry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #FAF6F0; 
+            --text-main: #4A3B32; 
+            --text-light: #7A6C63;
+            --accent-color: #D4A373; 
+            --accent-hover: #B58453;
+            --white: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        h4 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 21pt;}
+        h4 b{ font-size: 28pt; font-weight: 500;}
+        .container { max-width: 1000px; margin: 0 auto; padding: 80px 20px; }
+
+        /* --- PROFIL --- */
+        #profil {
+            height: 100vh; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; text-align: center;
+            background: linear-gradient(rgba(250, 246, 240, 0.8), rgba(250, 246, 240, 1)), 
+                        url('bg-hero.jpeg') center/cover;
+        }
+        .profile-img { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 5px solid var(--white); box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        #profil h1 { font-size: 3rem; margin-bottom: 10px; }
+        #profil p { font-size: 1.2rem; color: var(--text-light); margin-bottom: 30px; }
+
+        /* --- DESKRIPSI --- */
+        #deskripsi { text-align: center; background-color: var(--white); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-top: -50px; position: relative; z-index: 10; padding: 60px 40px; }
+        #deskripsi h2 { font-size: 2.2rem; margin-bottom: 20px; color: var(--accent-color); }
+
+        /* --- RESEP SLIDER --- */
+        .section-title { text-align: center; font-size: 2.2rem; margin-bottom: 50px; line-height: 1.3; }
+        .slider-wrapper { position: relative; }
+        .slide-btn { display: none; }
+        .recipe-slider { display: block; }
+        .recipe-card { display: flex; align-items: center; gap: 40px; margin-bottom: 60px; }
+        .mobile-only { display: none; }
+        .recipe-card:nth-child(even) { flex-direction: row-reverse; }
+        .recipe-img { flex: 1; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.08); background-color: var(--white); display: flex; justify-content: center; align-items: center; }
+        .recipe-img img { width: 100%; height: 300px; object-fit: cover; display: block; transition: transform 0.3s; }
+        .recipe-info { flex: 1; }
+        .recipe-info h3 { font-size: 1.8rem; margin-bottom: 15px; color: var(--accent-color); }
+
+        /* --- KARYA UNGGULAN SMANSAR (KONTEN BARU) --- */
+        .unggulan-layout { display: flex; align-items: center; gap: 50px; margin-top: 20px; }
+        .unggulan-img { flex: 1; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        .unggulan-img img { width: 100%; height: 400px; object-fit: cover; display: block; }
+        .unggulan-text { flex: 1; }
+        .unggulan-text h3 { font-size: 1.8rem; margin-bottom: 20px; color: var(--text-main); }
+        .unggulan-text p { font-size: 1.05rem; color: var(--text-light); line-height: 1.8; text-align: justify;}
+
+        /* --- VIDEO LAYOUT --- */
+        .video-section-container { 
+            display: flex; flex-direction: column; align-items: center; gap: 40px; width: 100%;
+        }
+        .main-video-row { width: 100%; max-width: 800px; }
+        .sub-video-row { display: flex; justify-content: center; gap: 30px; width: 100%; max-width: 800px; }
+        .video-box { position: relative; overflow: hidden; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.08); background-color: #2C2C2C; width: 100%; }
+        .sub-video-row .video-box { flex: 1; max-width: 350px; }
+        .ratio-16-9 { aspect-ratio: 16 / 9; }
+        .ratio-9-16 { aspect-ratio: 9 / 16; }
+
+        .video-placeholder {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            color: #888; font-size: 1rem; z-index: 0; text-align: center; padding: 15px;
+        }
+        .video-box video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; object-fit: cover; z-index: 1; }
+
+        /* --- BUTTONS --- */
+        .btn-container { text-align: center; margin-top: 20px; }
+        .btn-group { display: flex; justify-content: center; gap: 20px; margin-top: 30px; flex-wrap: wrap; }
+        .btn { display: inline-flex; align-items: center; gap: 10px; background-color: var(--accent-color); color: var(--white); padding: 12px 30px; border-radius: 30px; text-decoration: none; font-weight: 500; transition: 0.3s; }
+        .btn:hover { background-color: var(--accent-hover); transform: translateY(-2px); }
+        
+        /* Modifikasi Warna Tombol Sosial Media */
+        .btn-tiktok { background-color: #2C2C2C; }
+        .btn-tiktok:hover { background-color: #000000; }
+        .btn-youtube { background-color: #D25454; }
+        .btn-youtube:hover { background-color: #B53B3B; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .sub-video-row { gap: 15px; }
+            .slide-btn { display: flex; align-items: center; justify-content: center; position: absolute; top: 45%; transform: translateY(-50%); width: 45px; height: 45px; background-color: rgba(255, 255, 255, 0.9); color: var(--accent-color); border-radius: 50%; z-index: 10; border: 1px solid var(--accent-light); box-shadow: 0 4px 15px rgba(0,0,0,0.15);}
+            #slideLeft { left: 5px; } #slideRight { right: 5px; }
+            .recipe-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 20px; padding-bottom: 20px; -webkit-overflow-scrolling: touch; }
+            .recipe-slider::-webkit-scrollbar { display: none; }
+            .recipe-card, .recipe-card:nth-child(even) { flex: 0 0 90%; scroll-snap-align: center; flex-direction: column; text-align: center; margin-bottom: 0; background-color: var(--white); padding-bottom: 25px; border-radius: 15px; }
+            .mobile-only { display: flex; }
+            .recipe-img img { height: 250px; }
+            
+            /* Responsive untuk Karya Unggulan */
+            .unggulan-layout { flex-direction: column; text-align: center; gap: 30px; }
+            .unggulan-img img { height: 250px; }
+            .unggulan-text p { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <section id="profil">
+        <h1>Ni Nyoman Shanti Widjaja</h1>
+        <h2>Trainer Tata Boga Pastry Bakery</h2>
+        <h4>SMAN <b>1</b> Saradan</h4>
+    </section>
+
+    <div class="container">
+        <section id="deskripsi">
+            <h2>Tentang Saya</h2>
+            <p>Trainer Boga (Pastry & Bakery) dengan pengalaman sejak tahun 2021 hingga 2026 dalam melatih siswa SMA Double Track. Berkompeten dalam memberikan pelatihan teori dan praktik pembuatan pastry dan bakery, mulai dari teknik dasar hingga produksi produk siap jual. Berpengalaman membimbing siswa dalam pengembangan keterampilan, kreativitas, serta kewirausahaan melalui konsep pembelajaran 3P hingga 5P (Pelatihan, Praktik, Pengalaman, Produk, dan Pemasaran).</p>
+            <br>
+            <p>Sejak tahun 2021 hingga 2026, saya berperan sebagai trainer boga pastry & bakery yang berfokus pada pengembangan keterampilan siswa. Saya membimbing siswa dari tahap dasar hingga mampu menghasilkan produk yang berkualitas dan bernilai jual. Melalui pendekatan 3P yang berkembang menjadi 5P, saya tidak hanya mengajarkan cara membuat, tetapi juga menanamkan jiwa wirausaha agar siswa siap mandiri dan bersaing di dunia kerja.</p>
+        </section>
+    </div>
+
+    <section id="resep" class="container">
+        <h2 class="section-title">Karya & Resep Pilihan</h2>
+        <div class="slider-wrapper">
+            <button id="slideLeft" class="slide-btn">&#10094;</button>
+            <div class="recipe-slider" id="recipeSlider">
+                
+                <div class="recipe-card">
+                    <div class="recipe-img"><img src="Rotiboy.jpg.jpeg" alt="Roti Boy"></div>
+                    <div class="recipe-info"><h3>Roti Boy</h3><p>Roti manis dengan tekstur lembut di dalam dan topping krim kopi renyah yang aromatik.</p></div>
+                </div>
+                
+                <div class="recipe-card">
+                    <div class="recipe-img"><img src="bolu pandan panggang.png" alt="Bolu Pandan"></div>
+                    <div class="recipe-info"><h3>Bolu Pandan Panggang</h3><p>Bolu klasik yang wangi pandan alami dengan tekstur yang sangat empuk dan ringan.</p></div>
+                </div>
+                
+                <div class="recipe-card">
+                    <div class="recipe-img"><img src="nastar.jpg.jpeg" alt="Nastar"></div>
+                    <div class="recipe-info"><h3>Kue Kering Nastar</h3><p>Kue kering ikonik dengan isian selai nanas manis asam yang lumer di mulut.</p></div>
+                </div>
+
+                <div class="recipe-card mobile-only">
+                    <div class="recipe-img"><img src="donat ubi kuning.jpg.jpeg" alt="Donat Ubi"></div>
+                    <div class="recipe-info"><h3>Donat Ubi Kuning</h3><p>Modifikasi donat dengan ubi kuning yang ekstra lembut dan padat bernutrisi.</p></div>
+                </div>
+                
+                <div class="recipe-card mobile-only">
+                    <div class="recipe-img"><img src="Roti pisang.jpg.jpeg" alt="Roti Pisang"></div>
+                    <div class="recipe-info"><h3>Roti Pisang</h3><p>Roti sobek isi pisang manis dengan paduan cokelat dan keju yang klasik.</p></div>
+                </div>
+                
+                <div class="recipe-card mobile-only">
+                    <div class="recipe-img"><img src="risol mayo.jpg.jpeg" alt="Risol Mayo"></div>
+                    <div class="recipe-info"><h3>Risol Mayo</h3><p>Camilan gurih dengan kulit dadar tipis yang digoreng renyah berbalut tepung panir dan isian mayo.</p></div>
+                </div>
+                
+                <div class="recipe-card mobile-only">
+                    <div class="recipe-img"><img src="cake tape.jpg.jpeg" alt="Cake Tape Singkong"></div>
+                    <div class="recipe-info"><h3>Cake Tape Singkong</h3><p>Perpaduan kue bolu modern dengan cita rasa tradisional khas Indonesia yang beraroma wangi.</p></div>
+                </div>
+                
+                <div class="recipe-card mobile-only">
+                    <div class="recipe-img"><img src="bolu pisang.jpg.jpeg" alt="Bolu Pisang"></div>
+                    <div class="recipe-info"><h3>Bolu Pisang</h3><p>Bolu klasik dengan tekstur spons ringan yang menonjolkan rasa manis legit alami dari pisang.</p></div>
+                </div>
+                
+                <div class="recipe-card mobile-only">
+                    <div class="recipe-img"><img src="martabak mini.jpg.jpeg" alt="Martabak Mini"></div>
+                    <div class="recipe-info"><h3>Martabak Mini</h3><p>Versi mungil bersarang dari martabak manis yang disajikan lengkap dengan taburan meses dan keju.</p></div>
+                </div>
+                
+                <div class="recipe-card mobile-only">
+                    <div class="recipe-img"><img src="rainbow cake.jpg.jpeg" alt="Rainbow Cake"></div>
+                    <div class="recipe-info"><h3>Rainbow Cake</h3><p>Kue lapis berwarna-warni pelangi dengan whipped cream lembut yang manis dan memanjakan mata.</p></div>
+                </div>
+
+            </div>
+            <button id="slideRight" class="slide-btn">&#10095;</button>
+        </div>
+        <div class="btn-container"><a href="recipe.html" class="btn">Buka Buku Resep Detail</a></div>
+    </section>
+
+    <section id="video" class="container">
+        <h2 class="section-title">Tutorial & Kelas Mengajar</h2>
+        
+        <div class="video-section-container">
+            <div class="main-video-row">
+                <div class="video-box ratio-16-9">
+                    <div class="video-placeholder">Video Utama (16:9) belum dimuat</div>
+                    <video src="video/yt.mp4" autoplay loop muted playsinline></video>
+                </div>
+            </div>
+
+            <div class="sub-video-row">
+                <div class="video-box ratio-9-16">
+                    <div class="video-placeholder">Video 1 (9:16)</div>
+                    <video src="video/tiktok1.mp4" autoplay loop muted playsinline></video>
+                </div>
+                <div class="video-box ratio-9-16">
+                    <div class="video-placeholder">Video 2 (9:16)</div>
+                    <video src="video/tiktok2.mp4" autoplay loop muted playsinline></video>
+                </div>
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <a href="https://www.tiktok.com/@nyomanshantiwidjaja" target="_blank" class="btn btn-tiktok">
+                <i class="fab fa-tiktok"></i> Lihat TikTok
+            </a>
+            
+            <a href="https://www.youtube.com/@ninyoman2360" target="_blank" class="btn btn-youtube">
+                <i class="fab fa-youtube"></i> Lihat YouTube
+            </a>
+        </div>
+    </section>
+
+    <section id="unggulan" class="container">
+        <h2 class="section-title">Karya Unggulan Boga SMANSAR<br></h2>
+        
+        <div class="unggulan-layout">
+            <div class="unggulan-img">
+                <img src="donat_labu_kuning.jpeg" alt="Inovasi Boga SMANSAR">
+            </div>
+            <div class="unggulan-text">
+                <p>Karya unggulan Boga SMANSAR! Donat super empuk dengan manis alami dan warna keemasan dari labu kuning segar. Pilihan camilan sehat dan lezat untuk menemani momen istimewa Anda.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer style="text-align: center; padding: 40px; color: var(--text-light); font-size: 0.9rem;">
+        <p>&copy; 2026 Made With love ❤️</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slider = document.getElementById('recipeSlider');
+            const btnLeft = document.getElementById('slideLeft');
+            const btnRight = document.getElementById('slideRight');
+            let autoSlideInterval;
+
+            const slideToRight = () => {
+                const cardWidth = slider.querySelector('.recipe-card').offsetWidth + 20;
+                if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 10) {
+                    slider.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    slider.scrollBy({ left: cardWidth, behavior: 'smooth' });
+                }
+            };
+
+            const slideToLeft = () => {
+                const cardWidth = slider.querySelector('.recipe-card').offsetWidth + 20;
+                if (slider.scrollLeft <= 0) {
+                    slider.scrollTo({ left: slider.scrollWidth, behavior: 'smooth' });
+                } else {
+                    slider.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+                }
+            };
+
+            const startAutoSlide = () => { 
+                if (window.innerWidth <= 768) {
+                    autoSlideInterval = setInterval(slideToRight, 3500); 
+                }
+            };
+
+            const stopAutoSlide = () => clearInterval(autoSlideInterval);
+
+            btnRight.addEventListener('click', () => { stopAutoSlide(); slideToRight(); startAutoSlide(); });
+            btnLeft.addEventListener('click', () => { stopAutoSlide(); slideToLeft(); startAutoSlide(); });
+            
+            slider.addEventListener('touchstart', stopAutoSlide);
+            slider.addEventListener('touchend', startAutoSlide);
+            
+            startAutoSlide();
+        });
+    </script>
+</body>
+</html>
